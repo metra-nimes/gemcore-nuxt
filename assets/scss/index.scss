@@ -1,3 +1,23 @@
 @import 'bootstrap_variables.scss';
 @import '~bootstrap/scss/bootstrap.scss';
 @import "bootswatch";
+
+body {
+  background: white;
+}
+
+.has-feedback {
+  color:#dc3545;
+  font-size: 0.7rem;
+}
+
+.form-control.error {
+  border-color: #dc3545;
+}
+
+.page-enter-active, .page-leave-active {
+  transition: opacity .5s;
+}
+.page-enter, .page-leave-to {
+  opacity: 0;
+}

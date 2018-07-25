@@ -1,8 +1,11 @@
 const pkg = require('./package')
 require('dotenv').config()
+const bodyParser = require('body-parser')
+const session = require('express-session')
+const dashboard = require('./config/dashboard')
 
 module.exports = {
-  mode: 'universal',
+  mode: "universal",
 
   /*
   ** Headers of the page
@@ -37,6 +40,7 @@ module.exports = {
   */
   plugins: [
     'plugins/bootstrap-vue.js',
+    'plugins/vee-validate.js',
   ],
 
   /*
@@ -45,13 +49,36 @@ module.exports = {
   modules: [
     // Doc: https://github.com/nuxt-community/axios-module#usage
     '@nuxtjs/axios',
-    '@nuxtjs/dotenv'
+    '@nuxtjs/dotenv',
+    '@nuxtjs/toast',
+    '@nuxtjs/font-awesome'
   ],
+
+  toast: {
+    position: 'bottom'
+  },
+
+  /*
+  ** Add server middleware
+  */
+  serverMiddleware: [
+    bodyParser.json(),
+    session({
+      secret: 'super-secret-key',
+      resave: false,
+      saveUninitialized: false,
+      cookie: { maxAge: 60000 }
+    }),
+    '~/api/index.js'
+  ],
+
   /*
   ** Axios module configuration
   */
   axios: {
     // See https://github.com/nuxt-community/axios-module#options
+    credentials: false,
+    baseURL: process.env.GEMCORE_API || '127.0.0.1:3000',
   },
   /*
   ** Build configuration
@@ -71,5 +98,21 @@ module.exports = {
         })
       }
     }
+  },
+  generate: {
+    routes: function () {
+      return dashboard
+        .then((res) => {
+          return res.data.map((page) => {
+            return {
+              route: '/dashboard/' + page.slug,
+              payload: page
+            }
+          })
+        })
+    }
+  },
+  env: {
+    dashboard: dashboard
   }
 }

@@ -1,44 +1,32 @@
-//import mutations from './mutations'
+import Vue from 'vue'
+import Vuex from 'vuex'
 
-export const state = () => ({
-  isAuth: false,
-  authToken:null
-})
+import mutations from './mutations'
+import actions from './actions'
+import getters from './getters'
 
-export const mutations = {
-  SET_AUTH: function (state, token) {
-    state.authToken = token
-    state.isAuth = true
-  }
-}
+Vue.use(Vuex)
 
-export const actions = {
+const store = () => new Vuex.Store({
 
-/*  nuxtServerInit({ commit }, { req }) {
-    if (req.session && req.session.authUser) {
-      commit('SET_USER', req.session.authUser)
-    }
-  },*/
-  async login({ commit },{username , password}) {
-    try {
-      const response = await this.$axios.$get(process.env.DEV_API+'/auth', {
-        params: {username , password}
-      })
-      commit('SET_AUTH',response.token)
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        throw new Error('refusal of authorization')
-      }
-      else if (error.response && error.response.status === 404) {
-        throw new Error('user is not found')
-      }
-      throw error
+  state: {
+    isLogged : false,
+    modalForm : 'Register',
+    user:{
+      name : null,
+      token : null,
+      properties : null
+    },
+    note : false,
+    notes : {
+      changed : false,
+      id : null,
+      body: {}
     }
   },
+  mutations : mutations,
+  actions : actions,
+  getters : getters
+})
 
-  async logout({ commit }) {
-    await axios.post('/api/logout')
-    commit('SET_AUTH', null)
-  }
-
-}
+export default store
